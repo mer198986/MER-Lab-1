@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Loading data into R, data transformation, and summary statistics
 
-**Mary ELizabeth Rudd**
+**Mary Elizabeth Rudd**
 
 **Overview and lab criteria:**
 
@@ -104,7 +104,16 @@ kable(head(daymet_south))
 ```{r}
 #| label: task3
 
-# Your code goes here
+  ggplot(daymet_south, 
+         aes(x=year,
+             y=mean_tmin,
+             color=state,
+             group=state))+
+  geom_line() +
+  labs(title="Mean Minimum Temperature by State Over Time",
+       x="Year",
+       y="Mean Minimum Temp (Cº)") +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ## Task 4
@@ -114,7 +123,12 @@ kable(head(daymet_south))
 ```{r}
 #| label: task4
 
-# Your code goes here
+daymet_south_wide<-daymet_south %>%
+  pivot_wider(id_cols="state",
+               names_from="year",
+               values_from="mean_tmin")
+
+kable(daymet_south_wide)
 ```
 
 ## Task 5
@@ -124,14 +138,42 @@ kable(head(daymet_south))
 ```{r}
 #| label: task5
 
-# Your code goes here
+daymet_regions <- daymet_data %>%
+  filter(year=="Y2015")%>%
+  group_by(state,year,region) %>%
+  summarise(mean_tmax = round(mean(median_tmax), 1),
+           mean_prcp= round(mean(sum_prcp), 1))
+
+ggplot(daymet_regions, 
+         aes(x=mean_tmax,
+             y=mean_prcp,
+             color=region))+
+  geom_point() +
+  labs(title="Mean Maximum Temperature and Mean\nMonthly Precipitation Amount by Region in 2015",
+       x="Mean Maximum Temperature (Cº)",
+       y="Mean Monthly Precipitation Amount (mm)") + 
+  theme(plot.title = element_text(hjust = 0.5, size = 14))
+        
+  
 ```
 
 ## Task 6
 
 *In the space below, explain what each function in your code for task 5 does to the dataset in plain English.*
 
-*Your response here.*
+1. daymet_regions <- daymet_data %>% - this takes all the functions done below and applies them to a new daymet_regions dataframe
+2. filter() - filters out all other years except Y2015 from the data
+3. group_by() - splits the data into groups by state/region/year
+4. summarise() turns each of the groups into one row and calculates and mean round inside of those rows in the tmax and pcrp columns
+5. aes () links columns to visual properties like axes, colors, etc...
+6. geom_point() draws the dots/places the data on the plot
+7. labs() allows you to change labels, axis titles, legends
+8. theme() allows you to change appearance of plot elements
+
+
+First section:My first section of code filters the daymet_data dataframe to isolate datapoints from the year 2015 and creates a new dataframe called daymet_regions. I then grouped this filtered data by state, year, and region to make sure the data is grouped by those variables, and then used a function (summarise) that takes the mean of the median_tmax and sum_prcp fields and rounds those values to 1 digit right of the decimal point.
+
+Second section: In this section, I created a scatter plot that displayed each state's mean maximum temperature (x-axis) and their mean precipitation amount (y-axis) for 2015. I added color so that the dots on the scatterplot are colored corresponding to their regions, i.e. the state names aren't visible anywhere. This creates a scatterplot that easily shows the patterns in average precipitation and temperatures in each region. I added a plot title with a manual line break and titles for my x and y axes, as well as centered and set a size for my plot title.
 
 ## Task 7
 
@@ -151,7 +193,12 @@ state_2015 <- daymet_data %>%
   )
 ```
 
-{Your response here}
+The 'across' function allows you to apply one transformation to multiple columns at the same time. In the function above:
+Line 180 calls the function within the "summarise" function, meaning we are wanting to summarize multiple columns at the same time/not having to call a function for each singular column we want to work with
+Line 181 selects the columns median_tmax and sum_prcp 
+Line 182 calculates the mean of median_tmax and sum_prcp at the same time and within one singular function
+Line 183 excludes missing (NA) values
+Line 184 is setting a naming convention for the columns that summarise(across)) is being applied to. It inserts "mean_" in front of every column name, creating mean_median_tmax and mean_sum_prcp
 
 
 ## Challenge Question
@@ -163,7 +210,6 @@ In addition to this code, write a short summary of a pattern that's evident in t
 ```{r}
 #| label: challenge
 
-# Your code goes here
 ```
 
 *Explanation goes here.*
@@ -174,10 +220,10 @@ In addition to this code, write a short summary of a pattern that's evident in t
 
 Besides class materials, what other sources of assistance did you use while completing this lab? These can include input from classmates, relevant material identified through web searches (e.g., Stack Overflow), or assistance from ChatGPT or other AI tools. How did these sources support your own learning in completing this lab?
 
-*Response here.*
+I used Claude for question 2 because I couldn't figure out where to put the round function, and that's it!
 
 ### Lab Reflection
 
 How do you feel about the work you did on this lab? Was it easy, moderate, or hard? What are the biggest things you learned by completing it?
 
-*Your response here.*
+This lab was honestly a little bit easier than the previous lab, simply because I am much more familiar with RStudio now after having more practice with it. On a scale of 1-10 this was probably a 3. 
